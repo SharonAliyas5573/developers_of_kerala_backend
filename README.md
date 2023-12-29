@@ -20,9 +20,9 @@ This backend repository serves as the core of our open-source job/freelance plat
 ## Technologies Used
 
 - **FastAPI**: Leveraging FastAPI, a modern, fast (high-performance), web framework for building APIs with Python 3.7+.
-- **Database (Choose based on preference)**: Utilizing databases like PostgreSQL, MySQL, MongoDB, or SQLite for data storage.
-- **Authentication**: Implementing authentication mechanisms such as JWT (JSON Web Tokens) or OAuth for secure user interactions.
-- **Deployment**: Deploying on platforms like AWS, Google Cloud, Heroku, or Docker for seamless deployment and hosting.
+- **Database (Choose based on preference)**: Planning to utilize MongoDB Atlas for data storage.(Looking for contributor)
+- **Authentication**: Implementing authentication mechanisms such as JWT (JSON Web Tokens) in fastapi.(Looking for contributor)
+- **Deployment**: Deploying on Digital Ocean using Docker (Looking for contributor)
 
 ## How to Contribute
 
