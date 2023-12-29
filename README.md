@@ -31,11 +31,12 @@ This backend repository serves as the core of our open-source job/freelance plat
 3. Make your **contributions** or enhancements to API endpoints, data models, security measures, or performance optimizations.
 4. Create a **Pull Request**.
 
-We encourage contributions of all kinds, whether it's bug fixes, new API endpoints, database optimizations, or documentation improvements. Join us in building a robust backend for supporting the Kerala Python community!
+We encourage contributions of all kinds, whether it's building the backend, bug fixes, new API endpoints, database optimizations, or documentation improvements. Join us in building a robust backend for supporting the Kerala Python community!
 
-## API Documentation
+## Hall of Fame
 
-Include a link to your API documentation or specify how to access and explore the API endpoints for developers who want to integrate with your backend services.
+Become one of the exclusive initial six builders of this platform and receive special badges for increased job search visibility. Your contributions will be celebrated, recognized, and you'll play a vital role in steering the future of this open-source gig/job platform.
+
 
 ## License
 
