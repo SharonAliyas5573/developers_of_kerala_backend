@@ -1,9 +1,8 @@
 # OpenSource Kerala Developers Gig/Job Platform - Backend
 
 **Still in the initial stages of the project, looking for 6 initial contributors to join this project!**
-**Let me know if you are interested. Contact me at [sangeeth123sj@gmail.com](mailto:sangeeth123sj@gmail.com){:target="_blank"}**
-**Website Link: [https://kerala-devs.vercel.app](https://kerala-devs.vercel.app){:target="_blank"}**
-
+**Let me know if you are interested. Contact me at [sangeeth123sj@gmail.com](mailto:sangeeth123sj@gmail.com)**
+**Website Link: [https://kerala-devs.vercel.app](https://kerala-devs.vercel.app)**
 
 Welcome to the backend repository of the OpenSource Kerala Developers Gig/Job Platform! This repository houses the backend services for our platform dedicated to fostering the growth of the Python community in Kerala.
 
