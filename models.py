@@ -8,3 +8,7 @@ class Developer(BaseModel):
     email: str
     resume: Optional[str] = None
 
+class User(BaseModel):
+    username: str
+    email: str
+    hashed_password: str
