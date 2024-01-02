@@ -1,2 +1,15 @@
 .env
-env
+env/
+.mypy_cache
+.vscode
+__pycache__
+.pytest_cache
+test.db
+log.txt
+Pipfile.lock
+env3.*
+docs_build
+site_build
+venv
+.DS_Store
+
