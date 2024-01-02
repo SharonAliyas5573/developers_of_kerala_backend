@@ -28,8 +28,15 @@ This backend repository serves as the core of our open-source job/freelance plat
 
 1. **Fork** the repository.
 2. **Clone** the forked repository to your local machine.
-3. Make your **contributions** or enhancements to API endpoints, data models, security measures, or performance optimizations.
-4. Create a **Pull Request**.
+3. **Create a Virtual Environment**:
+   - Create a virtual environment using `python -m venv env`.
+   - Activate the virtual environment (`source env/bin/activate` for Unix/Linux, `env\Scripts\activate` for Windows).
+4. **Install Requirements**: Run `pip install -r requirements.txt` to install necessary dependencies.
+5. **Set Up Environment Variables**:
+   - Create a `.env` file in the root directory.
+   - Add required secrets and configurations to the `.env` file, .env content secrets are available on Notion for team members.
+6. Make your **contributions** or enhancements to API endpoints, data models, security measures, or performance optimizations.
+7. Create a **Pull Request**.
 
 We encourage contributions of all kinds, whether it's building the backend, bug fixes, new API endpoints, database optimizations, or documentation improvements. Join us in building a robust backend for supporting the Kerala Python community!
 
