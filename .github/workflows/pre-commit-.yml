@@ -24,4 +24,4 @@ jobs:
 
     - name: Run pre-commit checks
       run: |
-        pre-commit run --all-files --hook-stage commit-msg --all
+        pre-commit run --all-files --all
