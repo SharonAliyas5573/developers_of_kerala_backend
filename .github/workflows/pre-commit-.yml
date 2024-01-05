@@ -25,3 +25,9 @@ jobs:
     - name: Run pre-commit checks
       run: |
         pre-commit run --all-files --all
+    - name: Check Pre-commit Status
+      run: |
+        if [ $? -ne 0 ]; then
+          echo "Pre-commit checks failed. Aborting workflow."
+          exit 1
+        fi
