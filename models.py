@@ -45,6 +45,7 @@ class Opening(BaseModel):
     qualification_required: str
     job_role: str
     job_description: str
+    no_of_openings: int = Field(default=1)
     status: OpeningStatus.active
 
 
