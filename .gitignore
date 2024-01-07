@@ -1,4 +1,5 @@
 .env
+.env.*
 env/
 .mypy_cache
 .vscode
@@ -11,4 +12,5 @@ env3.*
 docs_build
 site_build
 venv
+.venv
 .DS_Store
