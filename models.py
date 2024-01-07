@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr 
-from typing import List , Optional
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional
 from enum import Enum
 
 
@@ -15,7 +15,7 @@ class UserRegistration(BaseModel):
     email: EmailStr
     password: str
     role: UserRole = UserRole.developer
-    
+
 
 # Developer-specific fields
 class DeveloperProfileUpdate(BaseModel):
@@ -54,8 +54,7 @@ class CompanyProfileUpdate(BaseModel):
     contact: Optional[str] = None
     industry: Optional[str] = None
     detail_intro: Optional[str] = None
-    location: Optional[str] =None  # get from google maps api
+    location: Optional[str] = None  # get from google maps api
     openings: Optional[List[Opening]] = None
-    socials: Optional[dict] = None # e.g., {"LinkedIn": "<link>", etc}
+    socials: Optional[dict] = None  # e.g., {"LinkedIn": "<link>", etc}
     website: Optional[str] = None
-    

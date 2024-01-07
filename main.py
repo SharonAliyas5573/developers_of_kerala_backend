@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse , JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pymongo.errors import ServerSelectionTimeoutError
 from passlib.context import CryptContext
 from bson.objectid import ObjectId
@@ -105,7 +105,6 @@ async def list_developers():
     return developers_list
 
 
-
 @app.post("/register")
 async def register_user(
     username: str = Form(...),
@@ -183,6 +182,28 @@ async def generate_token(username_or_email: str = Form(...), password: str = For
             }
         )
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@app.post("/logout")
+async def logout():
+    """
+    Log out a user.
+    Invalidate the user's access token.
+
+    Returns:
+        JSONResponse: A JSON response indicating that the user has been logged out.
+
+    Note for front-end developers:
+        When this endpoint is called, the client should delete the access token from local storage.
+        This will simulate a logout operation by preventing the client from making authenticated requests to the server.
+    """
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": "success",
+            "message": "Logged out successfully",
+        },
+    )
 
 
 @app.post("/update_company_profile", status_code=200)
@@ -300,12 +321,12 @@ async def retrieve_company_list():
             {**company, "_id": str(company["_id"])} for company in companies
         ]
         return JSONResponse(
-        status_code=200,
-        content={
-            "status": "success",
-            "data": company_list,
-        },
-    )
+            status_code=200,
+            content={
+                "status": "success",
+                "data": company_list,
+            },
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500,
