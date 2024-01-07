@@ -1,17 +1,17 @@
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse , JSONResponse
 from pymongo.errors import ServerSelectionTimeoutError
 from passlib.context import CryptContext
-
+from bson.objectid import ObjectId
 
 from typing import Optional
 from dotenv import load_dotenv
-
+from models import DeveloperProfileUpdate, CompanyProfileUpdate
 
 from database import db
-
-from authentication import create_access_token
+from models import UserRegistration, Opening, OpeningStatus
+from authentication import create_access_token, get_current_user
 
 # Load environment variables from .env file
 load_dotenv()
@@ -105,7 +105,7 @@ async def list_developers():
     return developers_list
 
 
-# Endppoint for user registration
+
 @app.post("/register")
 async def register_user(
     username: str = Form(...),
@@ -113,6 +113,21 @@ async def register_user(
     password: str = Form(...),
     role: str = Form(...),
 ):
+    """
+    Register a new user.
+
+    Args:
+        username (str): The username of the user.
+        email (str): The email address of the user.
+        password (str): The password of the user.
+        role (str): The role of the user.
+
+    Returns:
+        dict: A dictionary containing the message and user_id if the user is registered successfully.
+
+    Raises:
+        HTTPException: If failed to register the user.
+    """
     user_dict = {
         "username": username,
         "email": email,
@@ -122,17 +137,33 @@ async def register_user(
     user_dict["password"] = pwd_context.hash(user_dict["password"])
     result = db.UserRegistration.insert_one(user_dict)
     if result.acknowledged:
-        return {
-            "message": "User registered successfully",
-            "user_id": str(result.inserted_id),
-        }
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": "User registered successfully",
+                "user_id": str(result.inserted_id),
+            },
+        )
     else:
         raise HTTPException(status_code=500, detail="Failed to register user")
 
 
-# Endpoint for user login
 @app.post("/login")
 async def generate_token(username_or_email: str = Form(...), password: str = Form(...)):
+    """
+    login a user.
+    Generate an access token for the user based on their username or email and password.
+
+    Args:
+        username_or_email (str): The username or email of the user.
+        password (str): The password of the user.
+
+    Returns:
+        JSONResponse: A JSON response containing the access token, token type, role, and username.
+
+    Raises:
+        HTTPException: If the provided credentials are invalid.
+    """
     user = db.UserRegistration.find_one(
         {"$or": [{"username": username_or_email}, {"email": username_or_email}]}
     )
@@ -143,10 +174,143 @@ async def generate_token(username_or_email: str = Form(...), password: str = For
             "role": user.get("role", ""),
         }
         token = create_access_token(token_data)
-        return {
-            "access_token": token,
-            "token_type": "bearer",
-            "role": user.get("role", ""),
-            "username": user["username"],
-        }
+        return JSONResponse(
+            {
+                "access_token": token,
+                "token_type": "bearer",
+                "role": user.get("role", ""),
+                "username": user["username"],
+            }
+        )
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@app.post("/update_company_profile", status_code=200)
+async def company_profile_update(
+    profile: CompanyProfileUpdate, current_user: dict = Depends(get_current_user)
+):
+    """
+    Update the company profile with the provided data.
+
+    Parameters:
+    - profile: CompanyProfileUpdate - The data to update the company profile.
+    - current_user: dict - The current user's information.
+
+    Returns:
+    - dict: A dictionary containing the message and updated user data if successful, or an error message if something goes wrong.
+    """
+    if current_user.get("role") != "company":
+        raise HTTPException(
+            status_code=403, detail="Access denied. Role must be company."
+        )
+    else:
+        try:
+            user_data = profile.dict(exclude_unset=True)
+
+            # Update the user data in the UserRegistration collection
+            result = db.UserRegistration.update_one(
+                {"_id": ObjectId(current_user["sub"])}, {"$set": user_data}
+            )
+
+            if result.modified_count > 0:
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "status": "success",
+                        "message": "Company Profile Updated Successfully",
+                        "data": user_data,
+                    },
+                )
+            else:
+                return JSONResponse(
+                    status_code=200,
+                    content={
+                        "status": "success",
+                        "message": "No changes made to the Company Profile",
+                        "data": user_data,
+                    },
+                )
+        except Exception as e:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "status": "error",
+                    "message": str(e),
+                    "data": None,
+                },
+            )
+
+
+@app.get("/company_profile/{company_id}")
+async def view_company_profile(company_id: str):
+    """
+    Retrieve the profile of a company by its ID.
+
+    Args:
+        company_id (str): The ID of the company.
+
+    Returns:
+        dict: A dictionary containing the company profile if found, or a message if not found.
+    """
+
+    try:
+        # Find the company by its ID
+        company = db.UserRegistration.find_one(
+            {"_id": ObjectId(company_id)}, {"password": 0}
+        )
+        if company:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "status": "success",
+                    "data": {**company, "_id": str(company["_id"])},
+                },
+            )
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail={
+                    "status": "error",
+                    "message": "Company not found",
+                },
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": str(e),
+            },
+        )
+
+
+@app.get("/company_list")
+async def retrieve_company_list():
+    """
+    Retrieve the list of companies from the collection.
+
+    Returns:
+        dict: A dictionary containing the list of companies.
+            Each company is represented as a dictionary with the "_id" field converted to a string.
+    """
+    try:
+        # Fetch all companies from the collection
+        companies = db.UserRegistration.find({"role": "company"}, {"password": 0})
+        company_list = [
+            {**company, "_id": str(company["_id"])} for company in companies
+        ]
+        return JSONResponse(
+        status_code=200,
+        content={
+            "status": "success",
+            "data": company_list,
+        },
+    )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": str(e),
+            },
+        )
