@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
+from typing import List, Optional
 from enum import Enum
 
 
@@ -15,13 +15,10 @@ class UserRegistration(BaseModel):
     email: EmailStr
     password: str
     role: UserRole = UserRole.developer
-    full_name: str
-    profile_pic: str  # s3 address for profile picture
-    contact: str  # default role is developer
 
 
 # Developer-specific fields
-class DeveloperProfileUpdate(UserRegistration):
+class DeveloperProfileUpdate(BaseModel):
     intro: str
     skills: List[str]
     experience: int
@@ -45,20 +42,19 @@ class Opening(BaseModel):
     qualification_required: str
     job_role: str
     job_description: str
-    status: OpeningStatus.active
+    no_of_openings: int = 1
+    status: OpeningStatus = OpeningStatus.active
 
 
 # Company-specific fields
-class CompanyProfileUpdate(UserRegistration):
-    name: str
-    industry: str
-    detail_intro: str
-    location: str
-    openings: List[Opening] = []
-    socials: dict  # e.g., {"LinkedIn": "<link>", etc}
-
-
-class UserReference(BaseModel):
-    user_info: UserRegistration
-    developer_info: DeveloperProfileUpdate = None
-    company_info: CompanyProfileUpdate = None
+class CompanyProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    full_name: Optional[str] = None
+    profile_pic: Optional[str] = None  # s3 address for profile pic
+    contact: Optional[str] = None
+    industry: Optional[str] = None
+    detail_intro: Optional[str] = None
+    location: Optional[str] = None  # get from google maps api
+    openings: Optional[List[Opening]] = None
+    socials: Optional[dict] = None  # e.g., {"LinkedIn": "<link>", etc}
+    website: Optional[str] = None

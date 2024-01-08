@@ -7,7 +7,7 @@
 
     """
 
-# Import additional modules
+
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -33,10 +33,17 @@ if SECRET_KEY is None:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Function Create Access Token
-
 
 def create_access_token(data: dict):
+    """
+    Create an access token using the provided data.
+
+    Args:
+        data (dict): The data to be encoded in the access token.
+
+    Returns:
+        str: The encoded access token.
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
@@ -44,10 +51,19 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
-# Fucntion to verify token
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    """
+    Retrieves the current user based on the provided token.
 
+    Parameters:
+    - token (str): The authentication token.
 
-def verify_token(token: str = Depends(oauth2_scheme)):
+    Returns:
+    - dict: The payload of the decoded token.
+
+    Raises:
+    - HTTPException: If the credentials cannot be validated.
+    """
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
@@ -56,5 +72,7 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+
+    except JWTError as e:
+        print(e)
         raise credentials_exception
