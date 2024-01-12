@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 
+from fastapi import BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 from app.db.engine import db
@@ -41,5 +42,16 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def blacklist_token(token: str):
-    db.blocklist.insert_one({"token": token})
+def delete_blocklisted_tokens():
+    current_time = datetime.utcnow()
+    db.blocklist.delete_many({"expire": {"$lt": current_time}})
+
+
+def blacklist_token(token: str, background_tasks: BackgroundTasks = None):
+    # Decode the token and get the expiry time
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    expire = payload.get("exp")
+    db.blocklist.insert_one({"token": token, "expire": expire})
+
+    if background_tasks is not None:
+        background_tasks.add_task(delete_blocklisted_tokens)

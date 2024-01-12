@@ -146,7 +146,6 @@ async def logout(token: str = Depends(oauth2_scheme)):
     TODO: Implement logout logic.
     """
     blacklist_token(token)
-    print(token)
     return JSONResponse(
         status_code=200,
         content={
