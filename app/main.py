@@ -25,7 +25,7 @@ if settings.BACKEND_CORS_ORIGINS:
     "/",
     response_class=HTMLResponse,
     responses={404: {"description": "Not found"}, 200: {"description": "OK"}},
-    tags=["home"],
+    tags=["root"],
 )
 def read_root():
     return """<h1>Kerala Devs</h1>
