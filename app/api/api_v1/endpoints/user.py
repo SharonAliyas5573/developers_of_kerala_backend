@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
-from app.core.security import pwd_context, create_access_token
+from app.core.security import pwd_context, create_access_token, blacklist_token
+from app.api.deps import oauth2_scheme
 from app.db.engine import db
 
 
@@ -133,8 +134,8 @@ async def login(
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
-@router.post("/logout")
-async def logout():
+@router.get("/logout", response_model=None)
+async def logout(token: str = Depends(oauth2_scheme)):
     """
     Log out a user.
     Invalidate the user's access token.
@@ -144,6 +145,8 @@ async def logout():
 
     TODO: Implement logout logic.
     """
+    blacklist_token(token)
+    print(token)
     return JSONResponse(
         status_code=200,
         content={

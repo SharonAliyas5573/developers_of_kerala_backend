@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
+from app.db.engine import db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -38,3 +39,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def blacklist_token(token: str):
+    db.blocklist.insert_one({"token": token})
