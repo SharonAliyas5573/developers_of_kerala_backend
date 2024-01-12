@@ -1,6 +1,7 @@
 from typing import Optional, List, Annotated
 from pydantic import BaseModel, Field, EmailStr
 from enum import Enum
+from bson import ObjectId
 
 
 class OpeningStatus(str, Enum):
@@ -19,23 +20,21 @@ class Opening(BaseModel):
     job_role: str = Field(...)
     job_description: str = Field(...)
     no_of_openings: int = Field(..., ge=1)
-    status: OpeningStatus = Field(..., default=OpeningStatus.active)
+    status: OpeningStatus = Field(default=OpeningStatus.active)
 
     class Config:
-        populate_by_name = (True,)
-        arbitrary_types_allowed = (True,)
-        json_schema_extra = (
-            {
-                "example": {
-                    "skills_needed": ["Python", "FastAPI"],
-                    "qualification_required": "Bachelor's Degree",
-                    "job_role": "Backend Developer",
-                    "job_description": "Develop and maintain backend services",
-                    "no_of_openings": 1,
-                    "status": "active",
-                }
-            },
-        )
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_schema_extra = {
+            "example": {
+                "skills_needed": ["Python", "FastAPI"],
+                "qualification_required": "Bachelor's Degree",
+                "job_role": "Backend Developer",
+                "job_description": "Develop and maintain backend services",
+                "no_of_openings": 1,
+                "status": "active",
+            }
+        }
 
 
 class CompanyProfile(BaseModel):
@@ -46,30 +45,28 @@ class CompanyProfile(BaseModel):
     contact: Optional[EmailStr] = Field(default=None)
     industry: Optional[str] = Field(default=None)
     detail_intro: Optional[str] = Field(default=None)
-    location: Optional[str] = Field(default=None)  # get from google maps api
+    location: Optional[str] = Field(default=None)  # link from google maps
     openings: Optional[List[Opening]] = Field(default=None)
     socials: Optional[dict] = Field(default=None)  # e.g., {"LinkedIn": "<link>", etc}
     website: Optional[str] = Field(default=None)
 
     class Config:
-        populate_by_name = (True,)
-        arbitrary_types_allowed = (True,)
-        json_schema_extra = (
-            {
-                "example": {
-                    "name": "Company Name",
-                    "full_name": "Full Company Name",
-                    "profile_pic": "s3://bucket/profile_pic.jpg",
-                    "contact": "contact@company.com",
-                    "industry": "Tech",
-                    "detail_intro": "Detailed introduction about the company",
-                    "location": "Location from Google Maps API",
-                    "openings": [],
-                    "socials": {"LinkedIn": "<link>"},
-                    "website": "https://company.com",
-                }
-            },
-        )
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_schema_extra = {
+            "example": {
+                "name": "Company Name",
+                "full_name": "Full Company Name",
+                "profile_pic": "s3://bucket/profile_pic.jpg",
+                "contact": "contact@company.com",
+                "industry": "Tech",
+                "detail_intro": "Detailed introduction about the company",
+                "location": "Location from Google Maps API",
+                "openings": [],
+                "socials": {"LinkedIn": "<link>"},
+                "website": "https://company.com",
+            }
+        }
 
 
 class UpdateCompanyProfileModel(BaseModel):
@@ -89,21 +86,19 @@ class UpdateCompanyProfileModel(BaseModel):
     website: Optional[str] = None
 
     class Config:
-        arbitrary_types_allowed = (True,)
-        json_encoders = ({ObjectId: str},)
-        json_schema_extra = (
-            {
-                "example": {
-                    "name": "Company Name",
-                    "full_name": "Full Company Name",
-                    "profile_pic": "s3://bucket/profile_pic.jpg",
-                    "contact": "contact@company.com",
-                    "industry": "Tech",
-                    "detail_intro": "Detailed introduction about the company",
-                    "location": "Location from Google Maps API",
-                    "openings": [],
-                    "socials": {"LinkedIn": "<link>"},
-                    "website": "https://company.com",
-                }
-            },
-        )
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        json_schema_extra = {
+            "example": {
+                "name": "Company Name",
+                "full_name": "Full Company Name",
+                "profile_pic": "s3://bucket/profile_pic.jpg",
+                "contact": "contact@company.com",
+                "industry": "Tech",
+                "detail_intro": "Detailed introduction about the company",
+                "location": "Location from Google Maps API",
+                "openings": [],
+                "socials": {"LinkedIn": "<link>"},
+                "website": "https://company.com",
+            }
+        }
