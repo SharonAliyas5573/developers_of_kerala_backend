@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
 
-
-from core.config import settings
-
+from app.core.config import settings
+from app.api.api_v1.api import api_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +21,16 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-    return "<h1>Hello Kerala Developers!</h1>"
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+    responses={404: {"description": "Not found"}, 200: {"description": "OK"}},
+    tags=["home"],
+)
+def read_root():
+    return """<h1>Kerala Devs</h1>
+    <p>API is working fine</p>
+"""
+
+
+app.include_router(api_router, prefix=settings.API_V1_STR)

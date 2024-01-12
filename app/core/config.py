@@ -1,15 +1,20 @@
 import secrets
+import os
+from dotenv import load_dotenv
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, EmailStr, HttpUrl, PostgresDsn, validator
 from pydantic_settings import BaseSettings
 
+load_dotenv()
+
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    # 60 minutes * 24 hours * 8 days = 8 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     SERVER_NAME: str = "Kerala Devs"
     SERVER_HOST: AnyHttpUrl = "http://localhost:8000"
 
@@ -27,6 +32,10 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
+
+    # MongoDB
+    MONGODB_URI: str = os.environ.get("MONGODB_URI")
+    MONGODB_NAME: str = os.environ.get("MONGODB_NAME")
 
     class Config:
         case_sensitive = True
