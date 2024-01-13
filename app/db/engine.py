@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.errors import ServerSelectionTimeoutError
 from app.core.config import settings
 
 
@@ -9,3 +10,12 @@ class Database:
 
 
 db = Database(settings.MONGODB_URI, settings.MONGODB_NAME).db
+
+
+async def check_db_connection():
+    try:
+        # The ismaster command is cheap and does not require auth.
+        db.command("ismaster")
+        return {"status": "Database is connected"}
+    except ServerSelectionTimeoutError as e:
+        return {"status": "Database connection failed", "exception": str(e)}

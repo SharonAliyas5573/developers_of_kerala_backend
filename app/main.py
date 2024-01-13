@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.db.engine import check_db_connection
 from app.api.api_v1.api import api_router
 
 app = FastAPI(
@@ -28,8 +29,10 @@ if settings.BACKEND_CORS_ORIGINS:
     tags=["root"],
 )
 def read_root():
-    return """<h1>Kerala Devs</h1>
+    db_status = check_db_connection()
+    return f"""<h1>Kerala Devs</h1>
     <p>API is working fine</p>
+    <p>Database status: {db_status}</p>
 """
 
 
