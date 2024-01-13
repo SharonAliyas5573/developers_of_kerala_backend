@@ -12,7 +12,7 @@ class Database:
 db = Database(settings.MONGODB_URI, settings.MONGODB_NAME).db
 
 
-async def check_db_connection():
+def check_db_connection():
     try:
         # The ismaster command is cheap and does not require auth.
         db.command("ismaster")

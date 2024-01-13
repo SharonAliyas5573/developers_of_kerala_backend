@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
-
+from pymongo.errors import ServerSelectionTimeoutError
 from app.core.config import settings
 from app.db.engine import check_db_connection
 from app.api.api_v1.api import api_router
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -30,9 +31,10 @@ if settings.BACKEND_CORS_ORIGINS:
 )
 def read_root():
     db_status = check_db_connection()
+    print(db_status)
     return f"""<h1>Kerala Devs</h1>
     <p>API is working fine</p>
-    <p>Database status: {db_status}</p>
+    <p>Database status: {db_status["status"]}</p>
 """
 
 
