@@ -1,4 +1,9 @@
-import secrets
+"""
+config.py
+
+This module contains the configuration settings for the application, including API version, secret key, algorithm, token expiration time, server name, host, project name, and CORS origins.
+
+"""
 import os
 from dotenv import load_dotenv
 from typing import Any, Dict, List, Optional, Union
@@ -11,10 +16,10 @@ load_dotenv()
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = secrets.token_urlsafe(32)
+    SECRET_KEY: str = str(os.environ.get("SECRET_KEY"))
 
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # one day
     SERVER_NAME: str = "Kerala Devs"
     SERVER_HOST: AnyHttpUrl = "http://localhost:8000"
 

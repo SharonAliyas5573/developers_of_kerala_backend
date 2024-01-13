@@ -1,3 +1,9 @@
+"""
+company.py
+
+This module contains the data models for handling operations related to job openings in companies.
+
+"""
 from typing import Optional, List, Annotated
 from pydantic import BaseModel, Field, EmailStr
 from enum import Enum
@@ -42,7 +48,7 @@ class CompanyProfile(BaseModel):
     name: Optional[str] = Field(default=None)
     full_name: Optional[str] = Field(default=None)
     profile_pic: Optional[str] = Field(default=None)  # s3 address for profile pic
-    contact: Optional[EmailStr] = Field(default=None)
+    contact: Optional[str] = Field(default=None)
     industry: Optional[str] = Field(default=None)
     detail_intro: Optional[str] = Field(default=None)
     location: Optional[str] = Field(default=None)  # link from google maps
@@ -58,7 +64,7 @@ class CompanyProfile(BaseModel):
                 "name": "Company Name",
                 "full_name": "Full Company Name",
                 "profile_pic": "s3://bucket/profile_pic.jpg",
-                "contact": "contact@company.com",
+                "contact": "+91xxxxxxxxx",
                 "industry": "Tech",
                 "detail_intro": "Detailed introduction about the company",
                 "location": "Location from Google Maps API",
