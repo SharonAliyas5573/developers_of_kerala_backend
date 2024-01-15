@@ -42,7 +42,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def delete_blocklisted_tokens():
+def delete_blacklisted_tokens():
     current_time = datetime.utcnow()
     db.blocklist.delete_many({"expire": {"$lt": current_time}})
 
