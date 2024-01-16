@@ -52,6 +52,12 @@ async def register_user(
     Raises:
         HTTPException: If failed to register the user.
     """
+    existing_user = db.UserRegistration.find_one(
+        {"$or": [{"username": username}, {"email": email}]}
+    )
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username or email already exists")
+
     user_dict = {
         "username": username,
         "email": email,
@@ -65,7 +71,6 @@ async def register_user(
             status_code=200,
             content={
                 "message": "User registered successfully",
-                "user_id": str(result.inserted_id),
             },
         )
     else:
@@ -120,14 +125,14 @@ async def login(
         token_data = {
             "sub": str(user["_id"]),
             "username": user["username"],
-            "role": user.get("role", ""),
+            "role": user.get("role"),
         }
         token = create_access_token(token_data)
         return JSONResponse(
             {
                 "access_token": token,
                 "token_type": "bearer",
-                "role": user.get("role", ""),
+                "role": user.get("role"),
                 "username": user["username"],
             }
         )
