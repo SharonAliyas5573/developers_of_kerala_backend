@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 from pymongo.errors import ServerSelectionTimeoutError
+from functools import lru_cache
 from app.core.config import settings
 from app.db.engine import check_db_connection
 from app.api.api_v1.api import api_router
