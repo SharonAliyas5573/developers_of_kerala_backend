@@ -52,7 +52,9 @@ async def register_user(
     Raises:
         HTTPException: If failed to register the user.
     """
-    existing_user = db.UserRegistration.find_one({"$or": [{"username": username}, {"email": email}]})
+    existing_user = db.UserRegistration.find_one(
+        {"$or": [{"username": username}, {"email": email}]}
+    )
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or email already exists")
 
