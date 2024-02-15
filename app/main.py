@@ -32,7 +32,6 @@ if settings.BACKEND_CORS_ORIGINS:
 )
 def read_root():
     db_status = check_db_connection()
-    print(db_status)
     return f"""<h1>Kerala Devs</h1>
     <p>API is working fine</p>
     <p>Database status: {db_status["status"]}</p>
