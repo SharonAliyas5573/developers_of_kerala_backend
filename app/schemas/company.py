@@ -43,6 +43,18 @@ class Opening(BaseModel):
         }
 
 
+class OpeningUpdate(BaseModel):
+    skills_needed: Optional[List[str]] = None
+    qualification_required: Optional[str] = None
+    job_role: Optional[str] = None
+    job_description: Optional[str] = None
+    no_of_openings: Optional[int] = None
+    status: Optional[OpeningStatus] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class CompanyProfile(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: Optional[str] = Field(default=None)

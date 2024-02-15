@@ -4,7 +4,7 @@ from app.core.config import settings
 from jose import jwt, JWTError
 from app.db.engine import db
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/user/token")
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
