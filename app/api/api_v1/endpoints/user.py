@@ -90,7 +90,7 @@ async def register_user(
 
 
 @router.post(
-    "/login",
+    "/token",
     responses={
         200: {
             "description": "Successful Response",
@@ -114,7 +114,7 @@ async def register_user(
     },
 )
 async def login(
-    username_or_email: str = Form(...), password: str = Form(...)
+    username: str = Form(...), password: str = Form(...)
 ) -> JSONResponse:
     """
     login a user.
@@ -131,7 +131,7 @@ async def login(
         HTTPException: If the provided credentials are invalid.
     """
     user = db.UserRegistration.find_one(
-        {"$or": [{"username": username_or_email}, {"email": username_or_email}]}
+        {"$or": [{"username": username}, {"email": username}]}
     )
     if user and pwd_context.verify(password, user["password"]):
         token_data = {
@@ -173,7 +173,7 @@ async def logout(token: str = Depends(oauth2_scheme)):
 
 
 @token_router.post(
-    "/token",
+    "/refresh-token",
     response_model=None,
     responses={
         200: {
