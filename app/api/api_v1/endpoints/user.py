@@ -113,9 +113,7 @@ async def register_user(
         },
     },
 )
-async def login(
-    username: str = Form(...), password: str = Form(...)
-) -> JSONResponse:
+async def login(username: str = Form(...), password: str = Form(...)) -> JSONResponse:
     """
     login a user.
     Generate an access token for the user based on their username or email and password.
