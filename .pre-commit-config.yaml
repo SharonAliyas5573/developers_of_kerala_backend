@@ -14,7 +14,7 @@ repos:
     rev: 3.7.9
     hooks:
     - id: flake8
-      args: ["--ignore=E501"]  # Ignore line too long (E501) error
+      args: ['--max-line-length', '88', '--exclude', '.git,__pycache__,.venv,venv']
 
 repos:
   # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
@@ -22,9 +22,4 @@ repos:
     rev: 23.12.1
     hooks:
       - id: black
-        # It is recommended to specify the latest version of Python
-        # supported by your project here, or alternatively use
-        # pre-commit's default_language_version, see
-        # https://pre-commit.com/#top_level-default_language_version
-        # language_version: python3.11
-
+        
