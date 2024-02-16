@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Form, HTTPException, Depends
 from app.db.engine import db
 from app.api.deps import get_current_user
+
 router = APIRouter()
 
 
@@ -21,10 +22,13 @@ async def submit_waitlist_email(email: str = Form(...)):
     except Exception as e:
         return {"error": str(e)}
 
+
 @router.get("/list")
 async def list_waitlist_emails(current_user: dict = Depends(get_current_user)):
     try:
         waitlist_emails = list(db.waitlist.find({}, {"_id": 0, "email": 1}))
         return {"waitlist_emails": waitlist_emails}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing waitlist emails: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error listing waitlist emails: {str(e)}"
+        )

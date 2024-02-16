@@ -57,6 +57,7 @@ async def retrieve_developer_list():
             },
         )
 
+
 @router.get(
     "/search",
     response_description="Search for developers based on criteria",
@@ -88,14 +89,14 @@ async def search_developers(
     try:
         # Create a dynamic query to find companies based on the provided field and value
         search_query = {"role": "developer", field: {"$regex": value, "$options": "i"}}
-        print('search_query:', search_query)
+        print("search_query:", search_query)
         developers = db.UserRegistration.find(search_query, {"password": 0})
         # Convert ObjectId to string for each company in the result
         developer_list = [
             {**developer, "_id": str(developer["_id"])} for developer in developers
         ]
 
-        print('developer_list', developer_list)
+        print("developer_list", developer_list)
         if not developer_list:
             raise HTTPException(status_code=404, detail=f"No developers found")
 
@@ -108,6 +109,7 @@ async def search_developers(
                 "message": str(e),
             },
         )
+
 
 @router.post(
     "/post",
@@ -140,13 +142,19 @@ async def create_developer(developer: UpdateDeveloperModel):
         created_developer = db.UserRegistration.find_one({"_id": result.inserted_id})
 
         if created_developer:
-            created_developer["_id"] = str(created_developer["_id"])  # Convert ObjectId to string
+            created_developer["_id"] = str(
+                created_developer["_id"]
+            )  # Convert ObjectId to string
             return created_developer
 
-        raise HTTPException(status_code=500, detail="Failed to create developer profile")
+        raise HTTPException(
+            status_code=500, detail="Failed to create developer profile"
+        )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create developer profile: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create developer profile: {str(e)}"
+        )
 
 
 @router.get(

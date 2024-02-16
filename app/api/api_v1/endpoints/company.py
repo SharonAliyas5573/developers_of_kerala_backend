@@ -72,12 +72,11 @@ async def retrieve_company_list():
         200: {"description": "Successful Response"},
     },
 )
-
 async def search_companies(
     field: str = Query(..., description="The field to search by"),
     value: str = Query(..., description="The value to search for"),
 ):
-    print('search field: ',field, value)
+    print("search field: ", field, value)
     """
     Search for companies based on a specific field and value.
 
@@ -95,7 +94,7 @@ async def search_companies(
         # Create a dynamic query to find companies based on the provided field and value
         search_query = {"role": "company", field: {"$regex": value, "$options": "i"}}
         companies = db.UserRegistration.find(search_query, {"password": 0})
-        print('companies-----', companies)
+        print("companies-----", companies)
 
         # Convert ObjectId to string for each company in the result
         company_list = [
@@ -147,14 +146,19 @@ async def create_company(company: UpdateCompanyProfileModel):
         created_company = db.UserRegistration.find_one({"_id": result.inserted_id})
 
         if created_company:
-            created_company["_id"] = str(created_company["_id"])  # Convert ObjectId to string
+            created_company["_id"] = str(
+                created_company["_id"]
+            )  # Convert ObjectId to string
             return created_company
 
-        raise HTTPException(status_code=500, detail="Failed to create developer profile")
+        raise HTTPException(
+            status_code=500, detail="Failed to create developer profile"
+        )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create developer profile: {str(e)}")
-
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create developer profile: {str(e)}"
+        )
 
 
 @router.get(
@@ -233,6 +237,3 @@ async def update_company(id: str, company: UpdateCompanyProfileModel = Body(...)
         return company
 
     raise HTTPException(status_code=404, detail=f"company {id} not found")
-
-
-

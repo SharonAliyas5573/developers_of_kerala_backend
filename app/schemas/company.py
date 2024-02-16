@@ -55,6 +55,7 @@ class OpeningOut(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class OpeningUpdate(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     skills_needed: Optional[List[str]] = None
@@ -83,7 +84,6 @@ class CompanyProfile(BaseModel):
     socials: Optional[dict] = Field(default=None)  # e.g., {"LinkedIn": "<link>", etc}
     website: Optional[str] = Field(default=None)
     contact: Optional[str] = Field(default=None)
-    
 
     class Config:
         populate_by_name = True
@@ -108,6 +108,7 @@ class UpdateCompanyProfileModel(BaseModel):
     """
     A set of optional updates to be made to a document in the database.
     """
+
     name: Optional[str] = None
     full_name: Optional[str] = None
     profile_pic: Optional[str] = None

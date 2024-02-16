@@ -6,7 +6,7 @@ from app.schemas.company import (
     UpdateCompanyProfileModel,
     Opening,
     OpeningUpdate,
-    OpeningOut
+    OpeningOut,
 )
 from app.db.engine import db
 from bson import ObjectId
@@ -33,13 +33,13 @@ async def get_job_list():
         job_list = list(db.Opening.find())
 
         # Convert ObjectId to string for each job in the result
-        job_list = [
-            {**job, "_id": str(job["_id"])} for job in job_list
-        ]
+        job_list = [{**job, "_id": str(job["_id"])} for job in job_list]
 
         return job_list
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve job list: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve job list: {str(e)}"
+        )
 
 
 @router.post(
@@ -53,7 +53,7 @@ async def get_job_list():
     },
 )
 async def post_job(job: Opening):
-    print('opening:',job.dict())
+    print("opening:", job.dict())
     try:
         # Assuming db is your MongoDB connection object
         # and Opening is your MongoDB collection
@@ -99,15 +99,13 @@ async def search_jobs(
     """
     try:
         # Create a dynamic query to find companies based on the provided field and value
-        search_query = { field: {"$regex": value, "$options": "i"}}
-        print('search_query:', search_query)
+        search_query = {field: {"$regex": value, "$options": "i"}}
+        print("search_query:", search_query)
         openings = db.Opening.find(search_query)
         # Convert ObjectId to string for each company in the result
-        opening_list = [
-            {**opening, "_id": str(opening["_id"])} for opening in openings
-        ]
+        opening_list = [{**opening, "_id": str(opening["_id"])} for opening in openings]
 
-        print('opening_list', opening_list)
+        print("opening_list", opening_list)
         if not opening_list:
             raise HTTPException(status_code=404, detail=f"No developers found")
 
@@ -141,7 +139,7 @@ async def update_job(job_id: str, updated_job: Opening):
         print(job_object_id)
         # Check if the job exists
         existing_job = db.Opening.find_one({"_id": job_object_id})
-        print('existing_job:',existing_job, updated_job.model_dump())
+        print("existing_job:", existing_job, updated_job.model_dump())
         if not existing_job:
             raise HTTPException(status_code=404, detail="Job not found")
 
@@ -151,15 +149,13 @@ async def update_job(job_id: str, updated_job: Opening):
             return_document=ReturnDocument.AFTER,
         )
 
-        print('updated_job---------------------',updated_job)
+        print("updated_job---------------------", updated_job)
         # Return the updated job
         # updated_job_dict = {**existing_job, **updated_job.model_dump()}
         if updated_job:
-            updated_job["_id"] = str(
-                updated_job["_id"]
-            )  # Convert ObjectId to string
+            updated_job["_id"] = str(updated_job["_id"])  # Convert ObjectId to string
             return updated_job
-        
+
     except HTTPException:
         # Re-raise HTTPException to keep the status code and detail intact
         raise
