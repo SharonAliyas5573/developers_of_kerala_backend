@@ -34,6 +34,14 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
+def verify_refresh_token(refresh_token: str):
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except jwt.JWTError:
+        return None
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -54,4 +62,4 @@ def blacklist_token(token: str, background_tasks: BackgroundTasks = None):
     db.blocklist.insert_one({"token": token, "expire": expire})
 
     if background_tasks is not None:
-        background_tasks.add_task(delete_blocklisted_tokens)
+        background_tasks.add_task(delete_blacklisted_tokens)

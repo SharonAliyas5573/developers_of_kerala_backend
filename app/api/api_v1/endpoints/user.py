@@ -1,12 +1,18 @@
 from fastapi import APIRouter, Form, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
-from app.core.security import pwd_context, create_access_token, blacklist_token
+from app.core.security import (
+    pwd_context,
+    create_access_token,
+    blacklist_token,
+    verify_refresh_token,
+)
 from app.api.deps import oauth2_scheme
 from app.db.engine import db
 
 
 router = APIRouter()
+token_router = APIRouter()
 
 
 @router.post(
@@ -35,7 +41,11 @@ async def register_user(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    role: str = Form(...),
+    role: str = Form(
+        ...,
+        choices=["company", "developer"],
+        description="User role - valid options: 'company', 'developer'",
+    ),
 ) -> JSONResponse:
     """
     Register a new user.
@@ -44,7 +54,7 @@ async def register_user(
         username (str): The username of the user.
         email (str): The email address of the user.
         password (str): The password of the user.
-        role (str): The role of the user.
+        role (str): The role of the user - valid options : 'developer' 'company'
 
     Returns:
         JSONResponse: A JSON response containing the message and user_id if the user is registered successfully.
@@ -52,12 +62,14 @@ async def register_user(
     Raises:
         HTTPException: If failed to register the user.
     """
+    print("role----", role)
+    if role not in ["company", "developer"]:
+        raise HTTPException(status_code=422, detail="Invalid role")
     existing_user = db.UserRegistration.find_one(
         {"$or": [{"username": username}, {"email": email}]}
     )
     if existing_user:
         raise HTTPException(status_code=400, detail="Username or email already exists")
-
     user_dict = {
         "username": username,
         "email": email,
@@ -78,7 +90,7 @@ async def register_user(
 
 
 @router.post(
-    "/login",
+    "/token",
     responses={
         200: {
             "description": "Successful Response",
@@ -101,9 +113,7 @@ async def register_user(
         },
     },
 )
-async def login(
-    username_or_email: str = Form(...), password: str = Form(...)
-) -> JSONResponse:
+async def login(username: str = Form(...), password: str = Form(...)) -> JSONResponse:
     """
     login a user.
     Generate an access token for the user based on their username or email and password.
@@ -119,7 +129,7 @@ async def login(
         HTTPException: If the provided credentials are invalid.
     """
     user = db.UserRegistration.find_one(
-        {"$or": [{"username": username_or_email}, {"email": username_or_email}]}
+        {"$or": [{"username": username}, {"email": username}]}
     )
     if user and pwd_context.verify(password, user["password"]):
         token_data = {
@@ -158,3 +168,64 @@ async def logout(token: str = Depends(oauth2_scheme)):
             "message": "Logged out successfully",
         },
     )
+
+
+@token_router.post(
+    "/refresh-token",
+    response_model=None,
+    responses={
+        200: {
+            "description": "Successful Token Refresh",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "access_token": "string",
+                        "token_type": "string",
+                        "role": "string",
+                        "username": "string",
+                    }
+                }
+            },
+        },
+        401: {
+            "description": "Invalid Refresh Token",
+            "content": {
+                "application/json": {"example": {"detail": "Invalid refresh token"}}
+            },
+        },
+    },
+)
+async def refresh_token(
+    refresh_token: str = Form(...),
+) -> JSONResponse:
+    """
+    Refresh the access token using a refresh token.
+
+    Args:
+        refresh_token (str): The refresh token.
+
+    Returns:
+        JSONResponse: A JSON response containing the new access token, token type, role, and username.
+
+    Raises:
+        HTTPException: If the provided refresh token is invalid.
+    """
+    user_id = verify_refresh_token(refresh_token)
+    if user_id:
+        user = db.UserRegistration.find_one({"_id": user_id})
+        if user:
+            token_data = {
+                "sub": str(user["_id"]),
+                "username": user["username"],
+                "role": user.get("role", ""),
+            }
+            new_access_token = create_access_token(token_data)
+            return JSONResponse(
+                {
+                    "access_token": new_access_token,
+                    "token_type": "bearer",
+                    "role": user.get("role", ""),
+                    "username": user["username"],
+                }
+            )
+    raise HTTPException(status_code=401, detail="Invalid refresh token")

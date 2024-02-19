@@ -20,7 +20,7 @@ PyObjectId = Annotated[str, Field(alias="_id", default=None)]
 
 
 class Opening(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    # id: Optional[PyObjectId] = Field(alias="_id", default=None)
     skills_needed: List[str] = Field(...)
     qualification_required: str = Field(...)
     job_role: str = Field(...)
@@ -43,8 +43,36 @@ class Opening(BaseModel):
         }
 
 
+class OpeningOut(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    skills_needed: Optional[List[str]] = None
+    qualification_required: Optional[str] = None
+    job_role: Optional[str] = None
+    job_description: Optional[str] = None
+    no_of_openings: Optional[int] = None
+    status: Optional[OpeningStatus] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class OpeningUpdate(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    skills_needed: Optional[List[str]] = None
+    qualification_required: Optional[str] = None
+    job_role: Optional[str] = None
+    job_description: Optional[str] = None
+    no_of_openings: Optional[int] = None
+    status: Optional[OpeningStatus] = None
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class CompanyProfile(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    username: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
     name: Optional[str] = Field(default=None)
     full_name: Optional[str] = Field(default=None)
     profile_pic: Optional[str] = Field(default=None)  # s3 address for profile pic
@@ -55,6 +83,7 @@ class CompanyProfile(BaseModel):
     openings: Optional[List[Opening]] = Field(default=None)
     socials: Optional[dict] = Field(default=None)  # e.g., {"LinkedIn": "<link>", etc}
     website: Optional[str] = Field(default=None)
+    contact: Optional[str] = Field(default=None)
 
     class Config:
         populate_by_name = True
